@@ -8,6 +8,6 @@ public class EntityCConfiguration : IEntityTypeConfiguration<EntityC>
 {
     public void Configure(EntityTypeBuilder<EntityC> builder)
     {
-        builder.OwnsOne(x => x.NestedProperty, cfg => cfg.ToJson());
+        builder.ComplexProperty(x => x.NestedProperty, cfg => cfg.ToJson());
     }
 }

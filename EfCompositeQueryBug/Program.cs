@@ -1,6 +1,5 @@
 ﻿using EfCompositeQueryBug;
 using EfCompositeQueryBug.Entities;
-using EfCompositeQueryBug.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,15 +9,11 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddSingleton<ITenantContext, StubTenantContext>();
 
-builder.Services.AddSingleton<TenantEntityInterceptor>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>((sp, b) =>
 {
-    b.UseSqlServer(connectionString)
-        .AddInterceptors(
-            sp.GetRequiredService<TenantEntityInterceptor>()
-        );
+    b.UseSqlServer(connectionString);
 });
 
 var app = builder.Build();
@@ -77,5 +72,5 @@ var items = await ctx.BaseEntities.FromSql(
                        from BaseEntities entity
                                 join query q on q.Id = entity.ParentId)
         select * from query
-     """).IgnoreQueryFilters().AsNoTracking().ToListAsync();
+     """).AsNoTracking().ToListAsync();
 Console.WriteLine(items.Count);
